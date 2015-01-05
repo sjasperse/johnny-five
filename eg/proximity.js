@@ -1,6 +1,7 @@
 var five = require("../lib/johnny-five.js");
+var board = new five.Board();
 
-five.Board().on("ready", function() {
+board.on("ready", function() {
 
   var proximity = new five.Proximity({
     controller: "GP2Y0A21YK",
@@ -14,5 +15,4 @@ five.Board().on("ready", function() {
   proximity.on("change", function(data) {
     console.log("The obstruction has moved.");
   });
-
 });
