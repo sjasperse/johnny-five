@@ -277,8 +277,9 @@ board.on("ready", function() {
 ### Piezo
 - [Piezo Component](https://github.com/rwaldron/johnny-five/blob/master/docs/piezo.md)
 
-### IMU
+### IMU/Multi
 - [IMU (MPU6050)](https://github.com/rwaldron/johnny-five/blob/master/docs/imu-mpu6050.md)
+- [Multi (MPL115A2)](https://github.com/rwaldron/johnny-five/blob/master/docs/multi-mpl115a2.md)
 
 ### Sensors
 - [Accelerometer Component](https://github.com/rwaldron/johnny-five/blob/master/docs/accelerometer.md)

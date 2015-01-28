@@ -64,14 +64,14 @@ exports["Temperature -- LM35"] = {
     this.temperature.on("data", spy);
 
     raw(100);
-    
+
     this.clock.tick(100);
 
     test.ok(spy.calledOnce);
     test.equals(Math.round(spy.args[0][1].celsius), 49);
     test.equals(Math.round(spy.args[0][1].fahrenheit), 120);
     test.equals(Math.round(spy.args[0][1].kelvin), 322);
-    
+
     test.done();
   },
 
@@ -90,7 +90,7 @@ exports["Temperature -- LM35"] = {
 
     raw(200);
     this.clock.tick(100);
-    
+
     raw(100);
     this.clock.tick(100);
 
@@ -136,14 +136,14 @@ exports["Temperature -- TMP36"] = {
     this.temperature.on("data", spy);
 
     raw(150);
-    
+
     this.clock.tick(100);
 
     test.ok(spy.calledOnce);
     test.equals(Math.round(spy.args[0][1].celsius), 23);
     test.equals(Math.round(spy.args[0][1].fahrenheit), 74);
     test.equals(Math.round(spy.args[0][1].kelvin), 296);
-    
+
     test.done();
   }
 };
@@ -161,7 +161,7 @@ function createDS18B20(pin, address) {
 exports["Temperature -- DS18B20"] = {
 
   setUp: function(done) {
-    
+
     this.pin = 2;
     this.clock = sinon.useFakeTimers();
     this.sendOneWireConfig = sinon.spy(board.io, "sendOneWireConfig");
@@ -195,7 +195,7 @@ exports["Temperature -- DS18B20"] = {
     search = this.sendOneWireSearch.args[0][1];
     search(null, [device]);
 
-    
+
     test.ok(this.sendOneWireConfig.calledOnce);
     test.equals(this.sendOneWireConfig.args[0][0], this.pin);
 
@@ -228,7 +228,7 @@ exports["Temperature -- DS18B20"] = {
 
     test.ok(this.sendOneWireWrite.calledOnce);
     test.equals(this.sendOneWireWrite.args[0][0], this.pin);
-    test.equals(this.sendOneWireWrite.args[0][1], device); 
+    test.equals(this.sendOneWireWrite.args[0][1], device);
     test.equals(this.sendOneWireWrite.args[0][2], 0x44);
 
     test.ok(this.sendOneWireDelay.calledOnce);
@@ -326,7 +326,7 @@ exports["Temperature -- MPU6050"] = {
     test.equals(Math.round(spy.args[0][1].celsius), 49);
     test.equals(Math.round(spy.args[0][1].fahrenheit), 121);
     test.equals(Math.round(spy.args[0][1].kelvin), 323);
-    
+
     test.done();
   }
 };
@@ -344,7 +344,7 @@ exports["Temperature -- ANALOG"] = {
   setUp: function(done) {
     this.clock = sinon.useFakeTimers();
     this.analogRead = sinon.spy(board.io, "analogRead");
-    
+
     done();
   },
 
@@ -363,14 +363,14 @@ exports["Temperature -- ANALOG"] = {
     temperature.on("data", spy);
 
     raw(50);
-    
+
     this.clock.tick(100);
 
     test.ok(spy.calledOnce);
     test.equals(Math.round(spy.args[0][1].celsius), 50);
     test.equals(Math.round(spy.args[0][1].fahrenheit), 122);
     test.equals(Math.round(spy.args[0][1].kelvin), 323);
-    
+
     test.done();
   },
 
@@ -384,14 +384,14 @@ exports["Temperature -- ANALOG"] = {
     temperature.on("data", spy);
 
     raw(50);
-    
+
     this.clock.tick(100);
 
     test.ok(spy.calledOnce);
     test.equals(Math.round(spy.args[0][1].celsius), 22);
     test.equals(Math.round(spy.args[0][1].fahrenheit), 72);
     test.equals(Math.round(spy.args[0][1].kelvin), 295);
-    
+
     test.done();
   }
 };
@@ -427,14 +427,89 @@ exports["Temperature -- GROVE"] = {
     this.temperature.on("data", spy);
 
     raw(659);
-    
+
     this.clock.tick(100);
 
     test.ok(spy.calledOnce);
     test.equals(Math.round(spy.args[0][1].celsius), 23);
     test.equals(Math.round(spy.args[0][1].fahrenheit), 74);
     test.equals(Math.round(spy.args[0][1].kelvin), 296);
-    
+
     test.done();
+  }
+};
+
+exports["Temperature -- MPL115A2"] = {
+
+  setUp: function(done) {
+
+    this.i2cConfig = sinon.spy(board.io, "i2cConfig");
+    this.i2cWrite = sinon.spy(board.io, "i2cWrite");
+    this.i2cRead = sinon.spy(board.io, "i2cRead");
+    this.i2cReadOnce = sinon.spy(board.io, "i2cReadOnce");
+
+    this.temperature = new Temperature({
+      controller: "MPL115A2",
+      board: board,
+      freq: 10
+    });
+
+    done();
+  },
+
+  tearDown: function(done) {
+    this.i2cConfig.restore();
+    this.i2cWrite.restore();
+    this.i2cRead.restore();
+    this.i2cReadOnce.restore();
+    // this.clock.restore();
+    done();
+  },
+
+  data: function(test) {
+    test.expect(8);
+
+    // var spy = sinon.spy();
+    // this.temperature.on("data", spy);
+
+    var readOnce = this.i2cReadOnce.args[0][3];
+    readOnce([
+      67, 111,  // A0
+      176, 56,  // B1
+      179, 101, // B2
+      56, 116   // C12
+    ]);
+
+    setImmediate(function() {
+      test.ok(this.i2cConfig.calledOnce);
+      test.ok(this.i2cWrite.calledOnce);
+
+      test.equals(this.i2cWrite.args[0][0], 0x60);
+      test.deepEqual(this.i2cWrite.args[0][1], [0x12, 0x00]);
+
+      test.ok(this.i2cRead.calledOnce);
+      test.equals(this.i2cRead.args[0][0], 0x60);
+      test.deepEqual(this.i2cRead.args[0][1], 0x00);
+      test.equals(this.i2cRead.args[0][2], 4);
+
+      // In order to handle the Promise used for initialization,
+      // there can be no fake timers in this test, which means we
+      // can't use the clock.tick to move the interval forward
+      // in time.
+      //
+      //
+      // read = this.i2cRead.args[0][3];
+
+      // read([
+      //   0, 0, // barometer
+      //   129, 64, // temperature
+      // ]);
+
+      // this.clock.tick(100);
+      // test.ok(spy.called);
+      // test.equals(Math.round(spy.args[0][0].temperature), 70);
+
+      test.done();
+    }.bind(this));
   }
 };

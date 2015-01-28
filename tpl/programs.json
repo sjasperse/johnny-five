@@ -173,15 +173,16 @@
     ]
   },
   {
-    "topic": "IMU",
-    "classes": ["IMU"],
+    "topic": "IMU/Multi",
+    "classes": ["IMU", "Multi"],
     "files": [
-      "imu-mpu6050.js"
+      "imu-mpu6050.js",
+      "multi-mpl115a2.js"
     ]
   },
   {
     "topic": "Sensors",
-    "classes": ["Accelerometer", "Gyro", "Temperature", "Sensor"],
+    "classes": ["Accelerometer", "Barometer", "Gyro", "Temperature", "Sensor"],
     "files": [
       "accelerometer.js",
       "accelerometer-adxl345.js",
@@ -189,6 +190,7 @@
       "accelerometer-mma7361.js",
       "accelerometer-mpu6050.js",
       "accelerometer-pan-tilt.js",
+      "barometer-mpl115a2.js",
       "gyro.js",
       "gyro-lpr5150l.js",
       "gyro-mpu6050.js",
@@ -204,7 +206,8 @@
       "temperature-tmp36.js",
       "temperature-lm35.js",
       "temperature-ds18b20.js",
-      "temperature-mpu6050.js"
+      "temperature-mpu6050.js",
+      "temperature-mpl115a2.js"
     ]
   },
   {
